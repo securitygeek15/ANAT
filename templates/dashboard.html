@@ -1,205 +1,107 @@
 {% extends "base.html" %}
 
+{% block title %}Overview{% endblock %}
+{% block page_title %}Threat overview{% endblock %}
+
 {% block content %}
-
-<div class="mb-5">
-
-    <h1 class="display-4 fw-bold text-info">
-        🛡️ ANAT Dashboard
-    </h1>
-
-    <p class="text-secondary">
-        Real-Time Network Intrusion Detection System
-    </p>
-
-</div>
-
-
-<div class="row g-4">
-
-    <div class="col-md-4">
-        <div class="card p-4 text-center">
-            <h5>Total Packets</h5>
-            <h1>{{ total_packets }}</h1>
-        </div>
+<section class="hero-panel">
+    <div>
+        <span class="section-kicker">Live intelligence</span>
+        <h2>Your network at a glance.</h2>
+        <p>Traffic is being inspected continuously for anomalous activity and known attack patterns.</p>
     </div>
-
-    <div class="col-md-4">
-        <div class="card p-4 text-center">
-            <h5>Total Alerts</h5>
-            <h1>{{ total_alerts }}</h1>
-        </div>
+    <div class="hero-signal" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
+</section>
 
-    <div class="col-md-4">
-        <div class="card p-4 text-center">
-            <h5>High Alerts</h5>
-            <h1 class="text-danger">{{ high_alerts }}</h1>
+<section class="metrics-grid" aria-label="Network summary">
+    <article class="metric-card metric-blue">
+        <div class="metric-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3Z"/><path d="m4 12 8 4.5 8-4.5M4 16.5l8 4.5 8-4.5"/></svg>
         </div>
-    </div>
-
-</div>
-
-<hr class="my-5">
-
-
-<div class="row g-4">
-
-    <div class="col-lg-6">
-
-        <div class="card p-4">
-
-            <h4 class="mb-4">
-                📊 Protocol Distribution
-            </h4>
-
-            <canvas id="protocolChart"></canvas>
-
+        <div><span>Packets analyzed</span><strong>{{ "{:,}".format(total_packets) }}</strong></div>
+        <small>All captured traffic</small>
+    </article>
+    <article class="metric-card metric-amber">
+        <div class="metric-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg>
         </div>
-
-    </div>
-
-
-    <div class="col-lg-6">
-
-        <div class="card p-4">
-
-            <h4 class="mb-4">
-                🚨 Alert Severity
-            </h4>
-
-            <canvas id="severityChart"></canvas>
-
+        <div><span>Total alerts</span><strong>{{ "{:,}".format(total_alerts) }}</strong></div>
+        <small>Across all severities</small>
+    </article>
+    <article class="metric-card metric-red">
+        <div class="metric-icon">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5M12 17.5v.1"/></svg>
         </div>
+        <div><span>Critical threats</span><strong>{{ "{:,}".format(high_alerts) }}</strong></div>
+        <small>Requires attention</small>
+    </article>
+</section>
 
-    </div>
+<section class="chart-grid">
+    <article class="panel">
+        <div class="panel-heading">
+            <div><span class="section-kicker">Traffic mix</span><h3>Protocol distribution</h3></div>
+            <span class="panel-tag">TCP / UDP</span>
+        </div>
+        <div class="chart-wrap"><canvas id="protocolChart"></canvas></div>
+    </article>
+    <article class="panel">
+        <div class="panel-heading">
+            <div><span class="section-kicker">Risk profile</span><h3>Alert severity</h3></div>
+            <span class="panel-tag">All events</span>
+        </div>
+        <div class="chart-wrap"><canvas id="severityChart"></canvas></div>
+    </article>
+</section>
 
-</div>
-
-
-<hr class="my-5">
-
-<div class="row g-4">
-
-    <div class="col-lg-7">
-
-        <div class="card p-4">
-
-            <h4 class="mb-4">
-                🚨 Recent Alerts
-            </h4>
-
-            <table class="table table-dark table-hover align-middle">
-
-                <thead>
-
-                    <tr>
-                        <th>IP Address</th>
-                        <th>Alert Type</th>
-                        <th>Severity</th>
-                    </tr>
-
-                </thead>
-
+<section class="data-grid">
+    <article class="panel data-panel">
+        <div class="panel-heading">
+            <div><span class="section-kicker">Latest detections</span><h3>Recent alerts</h3></div>
+            <a class="text-link" href="{{ url_for('alerts') }}">View all <span>→</span></a>
+        </div>
+        <div class="table-scroll">
+            <table>
+                <thead><tr><th>Source</th><th>Detection</th><th>Severity</th><th>Time</th></tr></thead>
                 <tbody>
-
-                {% for alert in alerts %}
-
-                <tr>
-
-                    <td>{{ alert.src_ip }}</td>
-
-                    <td>{{ alert.alert_type }}</td>
-
-                    <td>
-
-                        {% if alert.severity=="HIGH" %}
-                        <span class="badge bg-danger">
-                            HIGH
-                        </span>
-
-                        {% elif alert.severity=="MEDIUM" %}
-                        <span class="badge bg-warning text-dark">
-                            MEDIUM
-                        </span>
-
-                        {% else %}
-                        <span class="badge bg-success">
-                            LOW
-                        </span>
-
-                        {% endif %}
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
+                    {% for alert in alerts %}
+                    <tr>
+                        <td><span class="mono address">{{ alert.src_ip }}</span></td>
+                        <td>{{ alert.alert_type }}</td>
+                        <td><span class="severity severity-{{ alert.severity|lower }}"><i></i>{{ alert.severity }}</span></td>
+                        <td class="muted mono">{{ alert.timestamp.strftime('%H:%M:%S') if alert.timestamp else '—' }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4"><div class="empty-state">No alerts detected. Your network is quiet.</div></td></tr>
+                    {% endfor %}
                 </tbody>
-
             </table>
-
         </div>
+    </article>
 
-    </div>
-
-
-    <div class="col-lg-5">
-
-        <div class="card p-4">
-
-            <h4 class="mb-4">
-                🏆 Top Source IPs
-            </h4>
-
-            <table class="table table-dark">
-
-                <tr>
-                    <th>IP</th>
-                    <th>Packets</th>
-                </tr>
-
-                {% for ip,count in top_ips %}
-
-                <tr>
-
-                    <td>{{ ip }}</td>
-
-                    <td>
-
-                        <span class="badge bg-info">
-
-                            {{ count }}
-
-                        </span>
-
-                    </td>
-
-                </tr>
-
-                {% endfor %}
-
-            </table>
-
+    <article class="panel source-panel">
+        <div class="panel-heading">
+            <div><span class="section-kicker">Traffic leaders</span><h3>Top source IPs</h3></div>
         </div>
-
-    </div>
-
-</div>
-
+        <div class="source-list">
+            {% for ip, count in top_ips %}
+            <div class="source-row">
+                <span class="source-rank">{{ "%02d"|format(loop.index) }}</span>
+                <div><strong class="mono">{{ ip }}</strong><small>Source address</small></div>
+                <span class="packet-count">{{ count }} pkt</span>
+            </div>
+            {% else %}
+            <div class="empty-state">No traffic captured yet.</div>
+            {% endfor %}
+        </div>
+    </article>
+</section>
 
 <script>
-
-const tcpCount={{tcp_count}};
-const udpCount={{udp_count}};
-
-const severityData=[
-{{high_alerts}},
-{{medium_alerts}},
-{{low_alerts}}
-];
-
+    const tcpCount = {{ tcp_count|tojson }};
+    const udpCount = {{ udp_count|tojson }};
+    const severityData = [{{ high_alerts|tojson }}, {{ medium_alerts|tojson }}, {{ low_alerts|tojson }}];
 </script>
-
 {% endblock %}

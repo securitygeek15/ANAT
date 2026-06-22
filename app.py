@@ -39,7 +39,7 @@ def home():
 
     recent_alerts = Alert.query.order_by(
         Alert.id.desc()
-    ).limit(10)
+    ).limit(10).all()
 
     tcp_count = Packet.query.filter_by(
         protocol="TCP"
@@ -63,23 +63,18 @@ def home():
     return render_template(
         "dashboard.html",
 
-        # Stats
         total_packets=total_packets,
         total_alerts=total_alerts,
 
-        # Alert counts
         high_alerts=high_alerts,
         medium_alerts=medium_alerts,
         low_alerts=low_alerts,
 
-        # Recent alerts table
         alerts=recent_alerts,
 
-        # Protocol chart
         tcp_count=tcp_count,
         udp_count=udp_count,
 
-        # Top IP leaderboard
         top_ips=top_ips
     )
 
@@ -88,7 +83,7 @@ def packets():
 
     packets = Packet.query.order_by(
         Packet.id.desc()
-    ).limit(100)
+    ).limit(100).all()
 
     return render_template(
         "packets.html",
@@ -101,7 +96,7 @@ def alerts():
 
     alerts = Alert.query.order_by(
         Alert.id.desc()
-    ).limit(100)
+    ).limit(100).all()
 
     return render_template(
         "alerts.html",

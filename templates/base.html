@@ -3,64 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANAT IDS</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="theme-color" content="#080b12">
+    <title>{% block title %}Overview{% endblock %} · ANAT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600&amp;display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
-
-<nav class="navbar navbar-dark bg-dark border-bottom border-info">
-
-    <div class="container">
-
-        <a class="navbar-brand" href="/">
-            🛡️ ANAT IDS
-        </a>
-
-        <div>
-
-            <a class="btn btn-outline-info me-2"
-               href="/">
-                Dashboard
+    <div class="app-shell">
+        <aside class="sidebar">
+            <a class="brand" href="{{ url_for('home') }}" aria-label="ANAT dashboard">
+                <span class="brand-mark">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 4.5 6v5.4c0 4.7 3.2 8.7 7.5 9.6 4.3-.9 7.5-4.9 7.5-9.6V6L12 3Z"/><path d="m8.5 12 2.2 2.2 4.8-5"/></svg>
+                </span>
+                <span>
+                    <strong>ANAT</strong>
+                    <small>Network Defense</small>
+                </span>
             </a>
 
-            <a class="btn btn-outline-success me-2"
-               href="/packets">
-                Packets
-            </a>
+            <nav class="nav-list" aria-label="Primary navigation">
+                <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{{ url_for('home') }}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg>
+                    <span>Overview</span>
+                </a>
+                <a class="nav-link {% if request.path == '/packets' %}active{% endif %}" href="{{ url_for('packets') }}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 4.5-8 4.5-8-4.5L12 3Z"/><path d="m4 12 8 4.5 8-4.5M4 16.5l8 4.5 8-4.5"/></svg>
+                    <span>Packets</span>
+                </a>
+                <a class="nav-link {% if request.path == '/alerts' %}active{% endif %}" href="{{ url_for('alerts') }}">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4"/></svg>
+                    <span>Alerts</span>
+                </a>
+            </nav>
 
-            <a class="btn btn-outline-danger"
-               href="/alerts">
-                Alerts
-            </a>
+            <div class="system-card">
+                <div class="system-status"><span class="status-dot"></span>System operational</div>
+                <p>Live packet monitoring is active.</p>
+            </div>
+        </aside>
 
-        </div>
+        <main class="main-content">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Security operations</p>
+                    <h1>{% block page_title %}Overview{% endblock %}</h1>
+                </div>
+                <div class="live-pill"><span class="status-dot"></span>Live monitoring</div>
+            </header>
 
+            <div class="page-content">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
     </div>
 
-</nav>
-
-<div class="container mt-4">
-
-    {% block content %}
-
-    {% endblock %}
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
-
-<script>
-setTimeout(function(){
-    location.reload();
-},5000);
-</script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script>
+        window.setTimeout(() => window.location.reload(), 10000);
+    </script>
 </body>
 </html>

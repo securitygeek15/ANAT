@@ -1,59 +1,38 @@
 {% extends "base.html" %}
 
+{% block title %}Packets{% endblock %}
+{% block page_title %}Packet explorer{% endblock %}
+
 {% block content %}
+<section class="page-intro">
+    <div><span class="section-kicker">Traffic inspection</span><h2>Recent network packets</h2><p>The latest 100 packets captured by the live network sensor.</p></div>
+    <span class="record-count">{{ packets|length }} records</span>
+</section>
 
-<h2>Alerts</h2>
-
-<table class="table table-dark table-hover">
-
-<thead>
-<tr>
-<th>ID</th>
-<th>Source IP</th>
-<th>Type</th>
-<th>Severity</th>
-</tr>
-</thead>
-
-<tbody>
-
-{% for alert in alerts %}
-
-<tr>
-
-<td>{{ alert.id }}</td>
-
-<td>{{ alert.src_ip }}</td>
-
-<td>{{ alert.alert_type }}</td>
-
-<td>
-
-{% if alert.severity=="HIGH" %}
-<span class="badge bg-danger">
-HIGH
-</span>
-
-{% elif alert.severity=="MEDIUM" %}
-<span class="badge bg-warning">
-MEDIUM
-</span>
-
-{% else %}
-<span class="badge bg-success">
-LOW
-</span>
-
-{% endif %}
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
+<article class="panel data-panel full-panel">
+    <div class="panel-heading">
+        <div><span class="section-kicker">Packet stream</span><h3>Capture log</h3></div>
+        <div class="live-pill compact"><span class="status-dot"></span>Updating</div>
+    </div>
+    <div class="table-scroll">
+        <table>
+            <thead><tr><th>ID</th><th>Source IP</th><th>Destination IP</th><th>Protocol</th><th>Port</th><th>Size</th><th>Captured</th></tr></thead>
+            <tbody>
+                {% for packet in packets %}
+                <tr>
+                    <td class="muted mono">#{{ packet.id }}</td>
+                    <td><span class="mono address">{{ packet.src_ip }}</span></td>
+                    <td><span class="mono">{{ packet.dst_ip }}</span></td>
+                    <td><span class="protocol protocol-{{ packet.protocol|lower }}">{{ packet.protocol }}</span></td>
+                    <td class="mono">{{ packet.port }}</td>
+                    <td class="mono">{{ packet.packet_size }} B</td>
+                    <td class="muted mono">{{ packet.timestamp.strftime('%H:%M:%S') if packet.timestamp else '—' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7"><div class="empty-state">Waiting for the first packet capture.</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
 {% endblock %}

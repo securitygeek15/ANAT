@@ -1,59 +1,37 @@
 {% extends "base.html" %}
 
+{% block title %}Alerts{% endblock %}
+{% block page_title %}Detection center{% endblock %}
+
 {% block content %}
+<section class="page-intro">
+    <div><span class="section-kicker">Threat intelligence</span><h2>Security alerts</h2><p>Prioritized detections generated from real-time network analysis.</p></div>
+    <span class="record-count">{{ alerts|length }} detections</span>
+</section>
 
-<h2>Alerts</h2>
-
-<table class="table table-dark table-hover">
-
-<thead>
-<tr>
-<th>ID</th>
-<th>Source IP</th>
-<th>Type</th>
-<th>Severity</th>
-</tr>
-</thead>
-
-<tbody>
-
-{% for alert in alerts %}
-
-<tr>
-
-<td>{{ alert.id }}</td>
-
-<td>{{ alert.src_ip }}</td>
-
-<td>{{ alert.alert_type }}</td>
-
-<td>
-
-{% if alert.severity=="HIGH" %}
-<span class="badge bg-danger">
-HIGH
-</span>
-
-{% elif alert.severity=="MEDIUM" %}
-<span class="badge bg-warning">
-MEDIUM
-</span>
-
-{% else %}
-<span class="badge bg-success">
-LOW
-</span>
-
-{% endif %}
-
-</td>
-
-</tr>
-
-{% endfor %}
-
-</tbody>
-
-</table>
-
+<article class="panel data-panel full-panel">
+    <div class="panel-heading">
+        <div><span class="section-kicker">Detection feed</span><h3>Latest alerts</h3></div>
+        <div class="live-pill compact"><span class="status-dot"></span>Live feed</div>
+    </div>
+    <div class="table-scroll">
+        <table>
+            <thead><tr><th>ID</th><th>Source IP</th><th>Alert type</th><th>Description</th><th>Severity</th><th>Detected</th></tr></thead>
+            <tbody>
+                {% for alert in alerts %}
+                <tr>
+                    <td class="muted mono">#{{ alert.id }}</td>
+                    <td><span class="mono address">{{ alert.src_ip }}</span></td>
+                    <td><strong>{{ alert.alert_type }}</strong></td>
+                    <td class="description-cell">{{ alert.description }}</td>
+                    <td><span class="severity severity-{{ alert.severity|lower }}"><i></i>{{ alert.severity }}</span></td>
+                    <td class="muted mono">{{ alert.timestamp.strftime('%H:%M:%S') if alert.timestamp else '—' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6"><div class="empty-state">No threats detected. All clear.</div></td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</article>
 {% endblock %}
