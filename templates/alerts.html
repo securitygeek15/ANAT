@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Alerts</h2>
+
+<table class="table table-dark table-hover">
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Source IP</th>
+<th>Type</th>
+<th>Severity</th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for alert in alerts %}
+
+<tr>
+
+<td>{{ alert.id }}</td>
+
+<td>{{ alert.src_ip }}</td>
+
+<td>{{ alert.alert_type }}</td>
+
+<td>
+
+{% if alert.severity=="HIGH" %}
+<span class="badge bg-danger">
+HIGH
+</span>
+
+{% elif alert.severity=="MEDIUM" %}
+<span class="badge bg-warning">
+MEDIUM
+</span>
+
+{% else %}
+<span class="badge bg-success">
+LOW
+</span>
+
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endblock %}

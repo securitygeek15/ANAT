@@ -1,0 +1,40 @@
+body{
+    background:#050816;
+    color:white;
+}
+
+.navbar{
+    border-bottom:1px solid cyan;
+}
+
+.card{
+    background:#101624;
+    border:1px solid #00ffff;
+    border-radius:20px;
+    box-shadow:0 0 20px rgba(0,255,255,.25);
+
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+
+    box-shadow:0 0 35px cyan;
+}
+
+h1{
+    color:#00ffff;
+}
+
+.table{
+    border-radius:15px;
+    overflow:hidden;
+}
+
+.badge{
+    font-size:14px;
+}
+
+canvas{
+    max-height:300px;
+}

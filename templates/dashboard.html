@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="mb-5">
+
+    <h1 class="display-4 fw-bold text-info">
+        🛡️ ANAT Dashboard
+    </h1>
+
+    <p class="text-secondary">
+        Real-Time Network Intrusion Detection System
+    </p>
+
+</div>
+
+
+<div class="row g-4">
+
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h5>Total Packets</h5>
+            <h1>{{ total_packets }}</h1>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h5>Total Alerts</h5>
+            <h1>{{ total_alerts }}</h1>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 text-center">
+            <h5>High Alerts</h5>
+            <h1 class="text-danger">{{ high_alerts }}</h1>
+        </div>
+    </div>
+
+</div>
+
+<hr class="my-5">
+
+
+<div class="row g-4">
+
+    <div class="col-lg-6">
+
+        <div class="card p-4">
+
+            <h4 class="mb-4">
+                📊 Protocol Distribution
+            </h4>
+
+            <canvas id="protocolChart"></canvas>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-lg-6">
+
+        <div class="card p-4">
+
+            <h4 class="mb-4">
+                🚨 Alert Severity
+            </h4>
+
+            <canvas id="severityChart"></canvas>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<hr class="my-5">
+
+<div class="row g-4">
+
+    <div class="col-lg-7">
+
+        <div class="card p-4">
+
+            <h4 class="mb-4">
+                🚨 Recent Alerts
+            </h4>
+
+            <table class="table table-dark table-hover align-middle">
+
+                <thead>
+
+                    <tr>
+                        <th>IP Address</th>
+                        <th>Alert Type</th>
+                        <th>Severity</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for alert in alerts %}
+
+                <tr>
+
+                    <td>{{ alert.src_ip }}</td>
+
+                    <td>{{ alert.alert_type }}</td>
+
+                    <td>
+
+                        {% if alert.severity=="HIGH" %}
+                        <span class="badge bg-danger">
+                            HIGH
+                        </span>
+
+                        {% elif alert.severity=="MEDIUM" %}
+                        <span class="badge bg-warning text-dark">
+                            MEDIUM
+                        </span>
+
+                        {% else %}
+                        <span class="badge bg-success">
+                            LOW
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <div class="col-lg-5">
+
+        <div class="card p-4">
+
+            <h4 class="mb-4">
+                🏆 Top Source IPs
+            </h4>
+
+            <table class="table table-dark">
+
+                <tr>
+                    <th>IP</th>
+                    <th>Packets</th>
+                </tr>
+
+                {% for ip,count in top_ips %}
+
+                <tr>
+
+                    <td>{{ ip }}</td>
+
+                    <td>
+
+                        <span class="badge bg-info">
+
+                            {{ count }}
+
+                        </span>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const tcpCount={{tcp_count}};
+const udpCount={{udp_count}};
+
+const severityData=[
+{{high_alerts}},
+{{medium_alerts}},
+{{low_alerts}}
+];
+
+</script>
+
+{% endblock %}
