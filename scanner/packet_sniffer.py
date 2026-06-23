@@ -1,8 +1,10 @@
+from datetime import datetime
+import logging
+
 from scapy.all import sniff
 from scapy.layers.inet import IP, TCP, UDP
-from datetime import datetime
+
 from database.db import db
-from analyzer.rules import detect_port_scan
 from analyzer.rules import detect_port_scan
 from analyzer.suspicious_ports import detect_suspicious_port
 from analyzer.packet_rate import detect_packet_flood
@@ -10,11 +12,19 @@ from analyzer.large_packet import detect_large_packet
 from analyzer.alert_manager import should_alert
 
 from database.models import Packet, Alert
+
 flask_app = None
+logger = logging.getLogger(__name__)
+
+
+def require_flask_app():
+    if flask_app is None:
+        raise RuntimeError("packet sniffer needs scanner.packet_sniffer.flask_app to be set")
+    return flask_app
 
 
 def save_packet(src_ip, dst_ip, protocol, port, packet_size):
-    with flask_app.app_context():
+    with require_flask_app().app_context():
 
         packet = Packet(
             src_ip=src_ip,
@@ -50,11 +60,6 @@ def process_packet(packet):
 
     packet_size = len(packet)
 
-    print(
-        f"{src_ip} -> {dst_ip} | "
-        f"{protocol} | Port {port}"
-    )
-
     save_packet(
         src_ip,
         dst_ip,
@@ -63,8 +68,6 @@ def process_packet(packet):
         packet_size
     )
     if detect_port_scan(src_ip, port):
-
-        print(f"[ALERT] Port Scan detected from {src_ip}")
 
         save_alert(
             src_ip,
@@ -77,8 +80,6 @@ def process_packet(packet):
 
     if service:
 
-        print(f"[ALERT] {service} access")
-
         save_alert(
             src_ip,
             "Suspicious Port",
@@ -89,8 +90,6 @@ def process_packet(packet):
 
     if detect_packet_flood(src_ip):
 
-        print(f"[ALERT] Packet Flood")
-
         save_alert(
             src_ip,
             "Packet Flood",
@@ -100,8 +99,6 @@ def process_packet(packet):
 
     if detect_large_packet(packet_size):
 
-        print(f"[ALERT] Large Packet")
-
         save_alert(
             src_ip,
             "Large Packet",
@@ -109,13 +106,18 @@ def process_packet(packet):
             f"Packet size = {packet_size}"
         )
 
+
 def start_sniffer():
     sniff(prn=process_packet, store=False)
 
 
 def save_alert(src_ip, alert_type, severity, description):
+    if not should_alert(src_ip, alert_type):
+        return
 
-    with flask_app.app_context():
+    logger.warning("[ALERT] %s from %s: %s", alert_type, src_ip, description)
+
+    with require_flask_app().app_context():
 
         alert = Alert(
             src_ip=src_ip,

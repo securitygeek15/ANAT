@@ -1,3 +1,5 @@
-from scanner.packet_sniffer import start_sniffer
+from app import app
+from scanner import packet_sniffer
 
-start_sniffer()
+packet_sniffer.flask_app = app
+packet_sniffer.start_sniffer()

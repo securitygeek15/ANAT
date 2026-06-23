@@ -6,13 +6,24 @@
 {% block content %}
 <section class="page-intro">
     <div><span class="section-kicker">Traffic inspection</span><h2>Recent network packets</h2><p>The latest 100 packets captured by the live network sensor.</p></div>
-    <span class="record-count">{{ packets|length }} records</span>
+    <div class="page-actions">
+        <span class="record-count">{{ packets|length }} records</span>
+        <a class="action-button" href="{{ url_for('export_packets') }}">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            <span>Export CSV</span>
+        </a>
+    </div>
 </section>
 
 <article class="panel data-panel full-panel">
     <div class="panel-heading">
         <div><span class="section-kicker">Packet stream</span><h3>Capture log</h3></div>
-        <div class="live-pill compact"><span class="status-dot"></span>Updating</div>
+        <div class="panel-actions">
+            <a class="icon-button" href="{{ url_for('export_packets') }}" title="Export packets as CSV" aria-label="Export packets as CSV">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+            </a>
+            <div class="live-pill compact"><span class="status-dot"></span>Updating</div>
+        </div>
     </div>
     <div class="table-scroll">
         <table>

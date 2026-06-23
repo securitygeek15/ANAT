@@ -210,7 +210,9 @@ svg {
 
 .live-pill,
 .record-count,
-.panel-tag {
+.panel-tag,
+.action-button,
+.icon-button {
     display: inline-flex;
     align-items: center;
     gap: 9px;
@@ -221,6 +223,36 @@ svg {
     color: #aeb7c5;
     font-size: 12px;
     font-weight: 600;
+}
+
+.action-button,
+.icon-button {
+    color: #d7e2f8;
+    transition: 150ms ease;
+}
+
+.action-button:hover,
+.icon-button:hover {
+    border-color: rgba(91, 140, 255, 0.36);
+    background: rgba(91, 140, 255, 0.12);
+    color: #ffffff;
+}
+
+.action-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+.icon-button {
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+}
+
+.icon-button svg {
+    width: 16px;
+    height: 16px;
 }
 
 .live-pill.compact {
@@ -416,6 +448,13 @@ svg {
     justify-content: space-between;
     gap: 18px;
     margin-bottom: 20px;
+}
+
+.panel-actions,
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .panel-heading h3 {
@@ -620,6 +659,12 @@ tbody tr:hover {
     flex: 0 0 auto;
 }
 
+.page-actions {
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
 .full-panel {
     min-height: 440px;
 }
@@ -674,6 +719,9 @@ tbody tr:hover {
     .panel { border-radius: 14px; }
     .page-intro { align-items: flex-start; flex-direction: column; gap: 16px; }
     .record-count { align-self: flex-start; }
+    .page-actions { justify-content: flex-start; }
+    .panel-heading { align-items: flex-start; }
+    .panel-actions { flex-wrap: wrap; justify-content: flex-end; }
 }
 
 @media (prefers-reduced-motion: reduce) {
