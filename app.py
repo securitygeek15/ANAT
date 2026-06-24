@@ -14,7 +14,7 @@ app = Flask(__name__)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
     "DATABASE_URL",
-    "sqlite:///network.db"
+    "sqlite:///network-traffic.db"
 )
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
