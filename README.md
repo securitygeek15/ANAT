@@ -122,7 +122,7 @@ The ANAT dashboard provides a unified, real-time view of your network security p
 
 > **Live monitoring panel — auto-refreshes every few seconds**
 
-![ANAT Dashboard](https://raw.githubusercontent.com/securitygeek15/ANAT/main/static/dashboard_screenshot.png)
+![ANAT Dashboard](images/dashboard.png)
 
 ### Dashboard Panels
 
