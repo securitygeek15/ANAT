@@ -2,7 +2,7 @@ import csv
 import os
 from io import StringIO
 
-from flask import Flask, Response, render_template, stream_with_context
+from flask import Flask, Response, jsonify, render_template, request, stream_with_context
 from sqlalchemy import func
 from database.db import db
 from database.models import Packet, Alert
@@ -34,6 +34,38 @@ def start_background_sniffer():
     )
     thread.start()
     return thread
+
+
+def parse_limit(default=100, maximum=500):
+    try:
+        limit = int(request.args.get("limit", default))
+    except (TypeError, ValueError):
+        return default
+
+    return max(1, min(limit, maximum))
+
+
+def serialize_packet(packet):
+    return {
+        "id": packet.id,
+        "source_ip": packet.src_ip,
+        "destination_ip": packet.dst_ip,
+        "protocol": packet.protocol,
+        "port": packet.port,
+        "packet_size": packet.packet_size,
+        "captured_at": packet.timestamp.isoformat() if packet.timestamp else None
+    }
+
+
+def serialize_alert(alert):
+    return {
+        "id": alert.id,
+        "source_ip": alert.src_ip,
+        "alert_type": alert.alert_type,
+        "severity": alert.severity,
+        "description": alert.description,
+        "detected_at": alert.timestamp.isoformat() if alert.timestamp else None
+    }
 
 
 @app.route("/")
@@ -119,6 +151,87 @@ def alerts():
         "alerts.html",
         alerts=alerts
     )
+
+
+@app.route("/api/stats")
+def api_stats():
+
+    severity_counts = {
+        "HIGH": Alert.query.filter_by(severity="HIGH").count(),
+        "MEDIUM": Alert.query.filter_by(severity="MEDIUM").count(),
+        "LOW": Alert.query.filter_by(severity="LOW").count()
+    }
+
+    protocol_counts = {
+        "TCP": Packet.query.filter_by(protocol="TCP").count(),
+        "UDP": Packet.query.filter_by(protocol="UDP").count(),
+        "OTHER": Packet.query.filter_by(protocol="OTHER").count()
+    }
+
+    top_sources = (
+        db.session.query(
+            Packet.src_ip,
+            func.count(Packet.id).label("packet_count")
+        )
+        .group_by(Packet.src_ip)
+        .order_by(func.count(Packet.id).desc())
+        .limit(5)
+        .all()
+    )
+
+    recent_alerts = Alert.query.order_by(
+        Alert.id.desc()
+    ).limit(10).all()
+
+    return jsonify({
+        "totals": {
+            "packets": Packet.query.count(),
+            "alerts": Alert.query.count()
+        },
+        "severity": severity_counts,
+        "protocols": protocol_counts,
+        "top_sources": [
+            {
+                "source_ip": src_ip,
+                "packet_count": packet_count
+            }
+            for src_ip, packet_count in top_sources
+        ],
+        "recent_alerts": [
+            serialize_alert(alert)
+            for alert in recent_alerts
+        ]
+    })
+
+
+@app.route("/api/packets")
+def api_packets():
+
+    packets = Packet.query.order_by(
+        Packet.id.desc()
+    ).limit(parse_limit()).all()
+
+    return jsonify({
+        "packets": [
+            serialize_packet(packet)
+            for packet in packets
+        ]
+    })
+
+
+@app.route("/api/alerts")
+def api_alerts():
+
+    alerts = Alert.query.order_by(
+        Alert.id.desc()
+    ).limit(parse_limit()).all()
+
+    return jsonify({
+        "alerts": [
+            serialize_alert(alert)
+            for alert in alerts
+        ]
+    })
 
 
 def build_csv_response(filename, headers, rows):

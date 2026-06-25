@@ -132,6 +132,12 @@ The ANAT dashboard provides a unified, real-time view of your network security p
 - **Top Source IPs** — Leaderboard of the most active source addresses
 - **Packet Counter** — Rolling total of packets captured in the current session
 
+### JSON API
+
+- `GET /api/stats` - totals, protocol counts, severity counts, top sources, and recent alerts
+- `GET /api/packets?limit=100` - latest packets as JSON
+- `GET /api/alerts?limit=100` - latest alerts as JSON
+
 ---
 
 ## 📦 Dependencies
