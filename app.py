@@ -3,7 +3,7 @@ import os
 from io import StringIO
 
 from flask import Flask, Response, jsonify, render_template, request, stream_with_context
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from database.db import db
 from database.models import Packet, Alert
 
@@ -43,6 +43,88 @@ def parse_limit(default=100, maximum=500):
         return default
 
     return max(1, min(limit, maximum))
+
+
+def clean_arg(name):
+    return request.args.get(name, "").strip()
+
+
+def packet_filter_values():
+    return {
+        "q": clean_arg("q"),
+        "src_ip": clean_arg("src_ip"),
+        "dst_ip": clean_arg("dst_ip"),
+        "protocol": clean_arg("protocol").upper(),
+        "port": clean_arg("port")
+    }
+
+
+def alert_filter_values():
+    return {
+        "q": clean_arg("q"),
+        "src_ip": clean_arg("src_ip"),
+        "severity": clean_arg("severity").upper(),
+        "alert_type": clean_arg("alert_type")
+    }
+
+
+def parse_port(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def filtered_packet_query(filters):
+    query = Packet.query
+
+    if filters["q"]:
+        pattern = f"%{filters['q']}%"
+        query = query.filter(or_(
+            Packet.src_ip.ilike(pattern),
+            Packet.dst_ip.ilike(pattern),
+            Packet.protocol.ilike(pattern)
+        ))
+
+    if filters["src_ip"]:
+        query = query.filter(Packet.src_ip.ilike(f"%{filters['src_ip']}%"))
+
+    if filters["dst_ip"]:
+        query = query.filter(Packet.dst_ip.ilike(f"%{filters['dst_ip']}%"))
+
+    if filters["protocol"] in {"TCP", "UDP", "OTHER"}:
+        query = query.filter(Packet.protocol == filters["protocol"])
+
+    if filters["port"]:
+        port = parse_port(filters["port"])
+        if port is not None:
+            query = query.filter(Packet.port == port)
+
+    return query
+
+
+def filtered_alert_query(filters):
+    query = Alert.query
+
+    if filters["q"]:
+        pattern = f"%{filters['q']}%"
+        query = query.filter(or_(
+            Alert.src_ip.ilike(pattern),
+            Alert.alert_type.ilike(pattern),
+            Alert.description.ilike(pattern),
+            Alert.severity.ilike(pattern)
+        ))
+
+    if filters["src_ip"]:
+        query = query.filter(Alert.src_ip.ilike(f"%{filters['src_ip']}%"))
+
+    if filters["severity"] in {"HIGH", "MEDIUM", "LOW"}:
+        query = query.filter(Alert.severity == filters["severity"])
+
+    if filters["alert_type"]:
+        query = query.filter(Alert.alert_type.ilike(f"%{filters['alert_type']}%"))
+
+    return query
 
 
 def serialize_packet(packet):
@@ -130,26 +212,40 @@ def home():
 @app.route("/packets")
 def packets():
 
-    packets = Packet.query.order_by(
+    filters = packet_filter_values()
+    query = filtered_packet_query(filters)
+
+    result_count = query.count()
+
+    packets = query.order_by(
         Packet.id.desc()
     ).limit(100).all()
 
     return render_template(
         "packets.html",
-        packets=packets
+        packets=packets,
+        filters=filters,
+        result_count=result_count
     )
 
 
 @app.route("/alerts")
 def alerts():
 
-    alerts = Alert.query.order_by(
+    filters = alert_filter_values()
+    query = filtered_alert_query(filters)
+
+    result_count = query.count()
+
+    alerts = query.order_by(
         Alert.id.desc()
     ).limit(100).all()
 
     return render_template(
         "alerts.html",
-        alerts=alerts
+        alerts=alerts,
+        filters=filters,
+        result_count=result_count
     )
 
 
@@ -207,11 +303,14 @@ def api_stats():
 @app.route("/api/packets")
 def api_packets():
 
-    packets = Packet.query.order_by(
+    filters = packet_filter_values()
+
+    packets = filtered_packet_query(filters).order_by(
         Packet.id.desc()
     ).limit(parse_limit()).all()
 
     return jsonify({
+        "filters": filters,
         "packets": [
             serialize_packet(packet)
             for packet in packets
@@ -222,11 +321,14 @@ def api_packets():
 @app.route("/api/alerts")
 def api_alerts():
 
-    alerts = Alert.query.order_by(
+    filters = alert_filter_values()
+
+    alerts = filtered_alert_query(filters).order_by(
         Alert.id.desc()
     ).limit(parse_limit()).all()
 
     return jsonify({
+        "filters": filters,
         "alerts": [
             serialize_alert(alert)
             for alert in alerts
@@ -263,7 +365,7 @@ def build_csv_response(filename, headers, rows):
 @app.route("/export/packets")
 def export_packets():
 
-    packets = Packet.query.order_by(
+    packets = filtered_packet_query(packet_filter_values()).order_by(
         Packet.id.desc()
     ).yield_per(500)
 
@@ -298,7 +400,7 @@ def export_packets():
 @app.route("/export/alerts")
 def export_alerts():
 
-    alerts = Alert.query.order_by(
+    alerts = filtered_alert_query(alert_filter_values()).order_by(
         Alert.id.desc()
     ).yield_per(500)
 

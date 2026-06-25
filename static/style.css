@@ -665,6 +665,73 @@ tbody tr:hover {
     justify-content: flex-end;
 }
 
+.filter-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    align-items: end;
+    gap: 12px;
+    margin: -8px 0 18px;
+    padding: 16px;
+    border: 1px solid var(--line);
+    border-radius: 17px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.filter-bar label {
+    display: grid;
+    min-width: 0;
+    gap: 7px;
+}
+
+.filter-bar label span {
+    color: #657086;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.filter-bar input,
+.filter-bar select {
+    width: 100%;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    outline: 0;
+    background: #0b1018;
+    color: var(--text);
+    font: inherit;
+    font-size: 12px;
+}
+
+.filter-bar input::placeholder {
+    color: #465165;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+    border-color: rgba(91, 140, 255, 0.45);
+    box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.12);
+}
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+button.action-button {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+button.action-button svg {
+    width: 15px;
+    height: 15px;
+}
+
 .full-panel {
     min-height: 440px;
 }
@@ -720,6 +787,7 @@ tbody tr:hover {
     .page-intro { align-items: flex-start; flex-direction: column; gap: 16px; }
     .record-count { align-self: flex-start; }
     .page-actions { justify-content: flex-start; }
+    .filter-actions { justify-content: flex-start; }
     .panel-heading { align-items: flex-start; }
     .panel-actions { flex-wrap: wrap; justify-content: flex-end; }
 }

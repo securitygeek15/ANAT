@@ -7,19 +7,56 @@
 <section class="page-intro">
     <div><span class="section-kicker">Traffic inspection</span><h2>Recent network packets</h2><p>The latest 100 packets captured by the live network sensor.</p></div>
     <div class="page-actions">
-        <span class="record-count">{{ packets|length }} records</span>
-        <a class="action-button" href="{{ url_for('export_packets') }}">
+        <span class="record-count">{{ result_count }} matches</span>
+        <a class="action-button" href="{{ url_for('export_packets', q=filters.q, src_ip=filters.src_ip, dst_ip=filters.dst_ip, protocol=filters.protocol, port=filters.port) }}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
             <span>Export CSV</span>
         </a>
     </div>
 </section>
 
+<form class="filter-bar" method="get" aria-label="Packet filters">
+    <label>
+        <span>Search</span>
+        <input type="search" name="q" value="{{ filters.q }}" placeholder="IP or protocol">
+    </label>
+    <label>
+        <span>Source IP</span>
+        <input type="search" name="src_ip" value="{{ filters.src_ip }}" placeholder="192.168.1.10">
+    </label>
+    <label>
+        <span>Destination IP</span>
+        <input type="search" name="dst_ip" value="{{ filters.dst_ip }}" placeholder="10.0.0.5">
+    </label>
+    <label>
+        <span>Protocol</span>
+        <select name="protocol">
+            <option value="">Any</option>
+            <option value="TCP" {% if filters.protocol == "TCP" %}selected{% endif %}>TCP</option>
+            <option value="UDP" {% if filters.protocol == "UDP" %}selected{% endif %}>UDP</option>
+            <option value="OTHER" {% if filters.protocol == "OTHER" %}selected{% endif %}>Other</option>
+        </select>
+    </label>
+    <label>
+        <span>Port</span>
+        <input type="number" name="port" value="{{ filters.port }}" min="0" max="65535" placeholder="443">
+    </label>
+    <div class="filter-actions">
+        <button class="action-button" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M7 12h10"/><path d="M10 19h4"/></svg>
+            <span>Apply</span>
+        </button>
+        <a class="icon-button" href="{{ url_for('packets') }}" title="Clear filters" aria-label="Clear filters">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </a>
+    </div>
+</form>
+
 <article class="panel data-panel full-panel">
     <div class="panel-heading">
         <div><span class="section-kicker">Packet stream</span><h3>Capture log</h3></div>
         <div class="panel-actions">
-            <a class="icon-button" href="{{ url_for('export_packets') }}" title="Export packets as CSV" aria-label="Export packets as CSV">
+            <a class="icon-button" href="{{ url_for('export_packets', q=filters.q, src_ip=filters.src_ip, dst_ip=filters.dst_ip, protocol=filters.protocol, port=filters.port) }}" title="Export packets as CSV" aria-label="Export packets as CSV">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
             </a>
             <div class="live-pill compact"><span class="status-dot"></span>Updating</div>

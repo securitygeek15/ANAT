@@ -7,19 +7,52 @@
 <section class="page-intro">
     <div><span class="section-kicker">Threat intelligence</span><h2>Security alerts</h2><p>Prioritized detections generated from real-time network analysis.</p></div>
     <div class="page-actions">
-        <span class="record-count">{{ alerts|length }} detections</span>
-        <a class="action-button" href="{{ url_for('export_alerts') }}">
+        <span class="record-count">{{ result_count }} matches</span>
+        <a class="action-button" href="{{ url_for('export_alerts', q=filters.q, src_ip=filters.src_ip, severity=filters.severity, alert_type=filters.alert_type) }}">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
             <span>Export CSV</span>
         </a>
     </div>
 </section>
 
+<form class="filter-bar" method="get" aria-label="Alert filters">
+    <label>
+        <span>Search</span>
+        <input type="search" name="q" value="{{ filters.q }}" placeholder="IP, type, severity">
+    </label>
+    <label>
+        <span>Source IP</span>
+        <input type="search" name="src_ip" value="{{ filters.src_ip }}" placeholder="192.168.1.10">
+    </label>
+    <label>
+        <span>Severity</span>
+        <select name="severity">
+            <option value="">Any</option>
+            <option value="HIGH" {% if filters.severity == "HIGH" %}selected{% endif %}>High</option>
+            <option value="MEDIUM" {% if filters.severity == "MEDIUM" %}selected{% endif %}>Medium</option>
+            <option value="LOW" {% if filters.severity == "LOW" %}selected{% endif %}>Low</option>
+        </select>
+    </label>
+    <label>
+        <span>Alert Type</span>
+        <input type="search" name="alert_type" value="{{ filters.alert_type }}" placeholder="Port Scan">
+    </label>
+    <div class="filter-actions">
+        <button class="action-button" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16"/><path d="M7 12h10"/><path d="M10 19h4"/></svg>
+            <span>Apply</span>
+        </button>
+        <a class="icon-button" href="{{ url_for('alerts') }}" title="Clear filters" aria-label="Clear filters">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </a>
+    </div>
+</form>
+
 <article class="panel data-panel full-panel">
     <div class="panel-heading">
         <div><span class="section-kicker">Detection feed</span><h3>Latest alerts</h3></div>
         <div class="panel-actions">
-            <a class="icon-button" href="{{ url_for('export_alerts') }}" title="Export alerts as CSV" aria-label="Export alerts as CSV">
+            <a class="icon-button" href="{{ url_for('export_alerts', q=filters.q, src_ip=filters.src_ip, severity=filters.severity, alert_type=filters.alert_type) }}" title="Export alerts as CSV" aria-label="Export alerts as CSV">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
             </a>
             <div class="live-pill compact"><span class="status-dot"></span>Live feed</div>

@@ -36,6 +36,7 @@ Whether you're a student, security researcher, or homelab enthusiast, ANAT gives
 | 🗄️ **SQLite Storage** | Lightweight persistent alert logging with SQLAlchemy ORM |
 | 📊 **Interactive Dashboard** | Live charts via Chart.js with protocol distribution & severity |
 | 🏆 **Top Source IP Leaderboard** | Ranks the most active/suspicious source IPs |
+| 🔎 **Packet & Alert Filters** | Search captured traffic and detections by IP, protocol, port, severity, or alert type |
 | 🔄 **Auto-Refresh Interface** | Dashboard updates automatically — no manual reload |
 | 🎨 **Cyberpunk UI** | Dark-themed Bootstrap 5 interface built for clarity under pressure |
 
