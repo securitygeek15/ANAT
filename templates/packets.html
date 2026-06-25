@@ -74,7 +74,7 @@
                     <td><span class="protocol protocol-{{ packet.protocol|lower }}">{{ packet.protocol }}</span></td>
                     <td class="mono">{{ packet.port }}</td>
                     <td class="mono">{{ packet.packet_size }} B</td>
-                    <td class="muted mono">{{ packet.timestamp.strftime('%H:%M:%S') if packet.timestamp else '—' }}</td>
+                    <td class="muted mono">{{ packet.timestamp.strftime('%H:%M:%S') if packet.timestamp else '--' }}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="7"><div class="empty-state">Waiting for the first packet capture.</div></td></tr>

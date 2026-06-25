@@ -1,7 +1,7 @@
 window.addEventListener("load", () => {
     if (typeof Chart === "undefined") return;
 
-    Chart.defaults.color = "#7f8a9d";
+    Chart.defaults.color = "#8a95a5";
     Chart.defaults.font.family = "DM Sans";
     Chart.defaults.font.size = 11;
 
@@ -14,10 +14,10 @@ window.addEventListener("load", () => {
                 labels: ["TCP", "UDP"],
                 datasets: [{
                     data: [tcpCount, udpCount],
-                    backgroundColor: ["#5b8cff", "#4dd8d0"],
-                    borderColor: "#0e131d",
-                    borderWidth: 5,
-                    hoverOffset: 5
+                    backgroundColor: ["#7aa7ff", "#3dd6b3"],
+                    borderColor: "#151922",
+                    borderWidth: 4,
+                    hoverOffset: 4
                 }]
             },
             options: {
@@ -27,7 +27,7 @@ window.addEventListener("load", () => {
                 plugins: {
                     legend: {
                         position: "right",
-                        labels: { usePointStyle: true, pointStyle: "circle", padding: 22, boxWidth: 7 }
+                        labels: { usePointStyle: true, pointStyle: "rectRounded", padding: 18, boxWidth: 8 }
                     }
                 }
             }
@@ -43,8 +43,8 @@ window.addEventListener("load", () => {
                 labels: ["High", "Medium", "Low"],
                 datasets: [{
                     data: severityData,
-                    backgroundColor: ["#ff627d", "#ffb547", "#46d29a"],
-                    borderRadius: 5,
+                    backgroundColor: ["#ff6b7a", "#f6b95a", "#4fd084"],
+                    borderRadius: 4,
                     borderSkipped: false,
                     barThickness: 28
                 }]
@@ -57,7 +57,7 @@ window.addEventListener("load", () => {
                     y: {
                         beginAtZero: true,
                         ticks: { precision: 0 },
-                        grid: { color: "rgba(255, 255, 255, 0.055)" },
+                        grid: { color: "rgba(255, 255, 255, 0.07)" },
                         border: { display: false }
                     }
                 },

@@ -7,8 +7,8 @@
 <section class="hero-panel">
     <div>
         <span class="section-kicker">Live intelligence</span>
-        <h2>Your network at a glance.</h2>
-        <p>Traffic is being inspected continuously for anomalous activity and known attack patterns.</p>
+        <h2>Network activity, prioritized.</h2>
+        <p>ANAT separates routine traffic from detections that deserve attention, then keeps the evidence easy to scan.</p>
     </div>
     <div class="hero-signal" aria-hidden="true">
         <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
@@ -34,8 +34,8 @@
         <div class="metric-icon">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.8 20h18.4L12 3Z"/><path d="M12 9v5M12 17.5v.1"/></svg>
         </div>
-        <div><span>Critical threats</span><strong>{{ "{:,}".format(high_alerts) }}</strong></div>
-        <small>Requires attention</small>
+        <div><span>High severity</span><strong>{{ "{:,}".format(high_alerts) }}</strong></div>
+        <small>Needs review</small>
     </article>
 </section>
 
@@ -60,7 +60,7 @@
     <article class="panel data-panel">
         <div class="panel-heading">
             <div><span class="section-kicker">Latest detections</span><h3>Recent alerts</h3></div>
-            <a class="text-link" href="{{ url_for('alerts') }}">View all <span>→</span></a>
+            <a class="text-link" href="{{ url_for('alerts') }}">View all <span>&rarr;</span></a>
         </div>
         <div class="table-scroll">
             <table>
@@ -71,7 +71,7 @@
                         <td><span class="mono address">{{ alert.src_ip }}</span></td>
                         <td>{{ alert.alert_type }}</td>
                         <td><span class="severity severity-{{ alert.severity|lower }}"><i></i>{{ alert.severity }}</span></td>
-                        <td class="muted mono">{{ alert.timestamp.strftime('%H:%M:%S') if alert.timestamp else '—' }}</td>
+                        <td class="muted mono">{{ alert.timestamp.strftime('%H:%M:%S') if alert.timestamp else '--' }}</td>
                     </tr>
                     {% else %}
                     <tr><td colspan="4"><div class="empty-state">No alerts detected. Your network is quiet.</div></td></tr>

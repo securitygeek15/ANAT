@@ -69,7 +69,7 @@
                     <td><strong>{{ alert.alert_type }}</strong></td>
                     <td class="description-cell">{{ alert.description }}</td>
                     <td><span class="severity severity-{{ alert.severity|lower }}"><i></i>{{ alert.severity }}</span></td>
-                    <td class="muted mono">{{ alert.timestamp.strftime('%H:%M:%S') if alert.timestamp else '—' }}</td>
+                    <td class="muted mono">{{ alert.timestamp.strftime('%H:%M:%S') if alert.timestamp else '--' }}</td>
                 </tr>
                 {% else %}
                 <tr><td colspan="6"><div class="empty-state">No threats detected. All clear.</div></td></tr>
