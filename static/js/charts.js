@@ -1,7 +1,7 @@
 window.addEventListener("load", () => {
     if (typeof Chart === "undefined") return;
 
-    Chart.defaults.color = "#8a95a5";
+    Chart.defaults.color = "#657386";
     Chart.defaults.font.family = "DM Sans";
     Chart.defaults.font.size = 11;
 
@@ -14,8 +14,8 @@ window.addEventListener("load", () => {
                 labels: ["TCP", "UDP"],
                 datasets: [{
                     data: [tcpCount, udpCount],
-                    backgroundColor: ["#7aa7ff", "#3dd6b3"],
-                    borderColor: "#151922",
+                    backgroundColor: ["#3f6ed8", "#0f9f82"],
+                    borderColor: "#ffffff",
                     borderWidth: 4,
                     hoverOffset: 4
                 }]
@@ -43,7 +43,7 @@ window.addEventListener("load", () => {
                 labels: ["High", "Medium", "Low"],
                 datasets: [{
                     data: severityData,
-                    backgroundColor: ["#ff6b7a", "#f6b95a", "#4fd084"],
+                    backgroundColor: ["#d84760", "#bd7418", "#168a55"],
                     borderRadius: 4,
                     borderSkipped: false,
                     barThickness: 28
@@ -57,7 +57,7 @@ window.addEventListener("load", () => {
                     y: {
                         beginAtZero: true,
                         ticks: { precision: 0 },
-                        grid: { color: "rgba(255, 255, 255, 0.07)" },
+                        grid: { color: "rgba(101, 115, 134, 0.16)" },
                         border: { display: false }
                     }
                 },
