@@ -37,6 +37,7 @@ Whether you're a student, security researcher, or homelab enthusiast, ANAT gives
 | 📊 **Interactive Dashboard** | Live charts via Chart.js with protocol distribution & severity |
 | 🏆 **Top Source IP Leaderboard** | Ranks the most active/suspicious source IPs |
 | 🔎 **Packet & Alert Filters** | Search captured traffic and detections by IP, protocol, port, severity, or alert type |
+| 🛡️ **Trusted Source Suppression** | Ignore alerts from known-safe gateways, routers, or management hosts |
 | 🔄 **Auto-Refresh Interface** | Dashboard updates automatically — no manual reload |
 | 🎨 **Cyberpunk UI** | Dark-themed Bootstrap 5 interface built for clarity under pressure |
 
@@ -107,6 +108,24 @@ python app.py
 
 # macOS / Linux
 sudo python app.py
+```
+
+### Trusted Gateways
+
+Gateways and routers can legitimately touch many ports or move many packets, which can create noisy false positives. Keep capturing their packets while suppressing alerts from them with `ANAT_TRUSTED_IPS`.
+
+```bash
+# Windows PowerShell
+$env:ANAT_TRUSTED_IPS="192.168.1.1"; python app.py
+
+# macOS / Linux
+ANAT_TRUSTED_IPS="192.168.1.1" sudo -E python app.py
+```
+
+Use commas for multiple trusted sources. CIDR ranges are also supported:
+
+```bash
+ANAT_TRUSTED_IPS="192.168.1.1,10.0.0.0/24"
 ```
 
 Then open your browser and navigate to:

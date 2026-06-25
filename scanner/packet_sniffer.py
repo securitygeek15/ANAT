@@ -10,6 +10,7 @@ from analyzer.suspicious_ports import detect_suspicious_port
 from analyzer.packet_rate import detect_packet_flood
 from analyzer.large_packet import detect_large_packet
 from analyzer.alert_manager import should_alert
+from analyzer.trusted_hosts import is_trusted_source
 
 from database.models import Packet, Alert
 
@@ -112,6 +113,10 @@ def start_sniffer():
 
 
 def save_alert(src_ip, alert_type, severity, description):
+    if is_trusted_source(src_ip):
+        logger.info("[TRUSTED] Suppressed %s from %s", alert_type, src_ip)
+        return
+
     if not should_alert(src_ip, alert_type):
         return
 
