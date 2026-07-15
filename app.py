@@ -1,5 +1,7 @@
 import csv
 import os
+import time
+import datetime
 from io import StringIO
 
 from flask import Flask, Response, jsonify, render_template, request, stream_with_context
@@ -31,6 +33,32 @@ def start_background_sniffer():
         target=sniffer.start_sniffer,
         daemon=True,
         name="packet-sniffer"
+    )
+    thread.start()
+    return thread
+
+
+def start_background_cleanup():
+    def cleanup_task():
+        while True:
+            with app.app_context():
+                try:
+                    retention_days = int(os.getenv("ANAT_RETENTION_DAYS", "30"))
+                    if retention_days > 0:
+                        cutoff_date = datetime.datetime.utcnow() - datetime.timedelta(days=retention_days)
+                        Packet.query.filter(Packet.timestamp < cutoff_date).delete()
+                        Alert.query.filter(Alert.timestamp < cutoff_date).delete()
+                        db.session.commit()
+                except Exception as e:
+                    print(f"Error in cleanup task: {e}")
+            
+            # Sleep for 6 hours
+            time.sleep(21600)
+
+    thread = threading.Thread(
+        target=cleanup_task,
+        daemon=True,
+        name="db-cleanup"
     )
     thread.start()
     return thread
@@ -434,6 +462,9 @@ if __name__ == "__main__":
 
     if os.getenv("ANAT_ENABLE_SNIFFER", "1") == "1":
         start_background_sniffer()
+
+    if os.getenv("ANAT_ENABLE_CLEANUP", "1") == "1":
+        start_background_cleanup()
 
     debug_mode = os.getenv("FLASK_DEBUG", "0") == "1"
 
