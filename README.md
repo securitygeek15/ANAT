@@ -152,6 +152,25 @@ docker-compose logs -f
 
 Once the container is running, open your browser and navigate to `http://127.0.0.1:5000` to view the dashboard.
 
+### 🔔 Discord Webhooks
+
+ANAT can automatically push High and Critical severity alerts to a Discord channel. To enable this, simply set the `DISCORD_WEBHOOK_URL` environment variable before running ANAT:
+
+**Using Docker Compose:** Add it to the `environment:` section in `docker-compose.yml`:
+```yaml
+    environment:
+      - DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
+```
+
+**Using Native Terminal:**
+```bash
+# Windows
+$env:DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."; python app.py
+
+# macOS/Linux
+DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..." sudo -E python app.py
+```
+
 ---
 
 ## 📸 Dashboard
