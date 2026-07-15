@@ -18,6 +18,25 @@
     --sidebar: 260px;
 }
 
+:root.dark-mode {
+    --bg: #0d1117;
+    --shell: #161b22;
+    --surface: #161b22;
+    --surface-raised: #21262d;
+    --surface-soft: #1f2a27;
+    --line: #30363d;
+    --line-strong: #484f58;
+    --text: #c9d1d9;
+    --muted: #8b949e;
+    --muted-strong: #b1bac4;
+    --accent: #2ea043;
+    --accent-blue: #58a6ff;
+    --violet: #8957e5;
+    --amber: #d29922;
+    --red: #f85149;
+    --green: #2ea043;
+}
+
 * {
     box-sizing: border-box;
 }

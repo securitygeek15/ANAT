@@ -50,7 +50,10 @@
                     <p class="eyebrow">Security operations</p>
                     <h1>{% block page_title %}Overview{% endblock %}</h1>
                 </div>
-                <div class="live-pill"><span class="status-dot"></span>Live monitoring</div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <button id="theme-toggle" aria-label="Toggle Dark Mode" style="background: var(--surface-raised); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; color: var(--text);">🌓</button>
+                    <div class="live-pill"><span class="status-dot"></span>Live monitoring</div>
+                </div>
             </header>
 
             <div class="page-content">

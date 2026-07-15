@@ -74,3 +74,24 @@ window.addEventListener("load", () => {
         delay: 1.5
     });
 });
+
+// Theme Toggle Logic
+document.addEventListener("DOMContentLoaded", () => {
+    const toggleBtn = document.getElementById("theme-toggle");
+    if (!toggleBtn) return;
+    
+    // Check local storage for preference
+    const currentTheme = localStorage.getItem("theme");
+    if (currentTheme === "dark") {
+        document.documentElement.classList.add("dark-mode");
+    }
+    
+    toggleBtn.addEventListener("click", () => {
+        document.documentElement.classList.toggle("dark-mode");
+        let theme = "light";
+        if (document.documentElement.classList.contains("dark-mode")) {
+            theme = "dark";
+        }
+        localStorage.setItem("theme", theme);
+    });
+});
