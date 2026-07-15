@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  anat:
+    build: .
+    container_name: anat
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./instance:/app/instance
+    # Required for Scapy to sniff raw network packets
+    network_mode: "host"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    environment:
+      - FLASK_DEBUG=0
+      - HOST=0.0.0.0
+      - PORT=5000

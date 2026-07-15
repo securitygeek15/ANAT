@@ -134,6 +134,18 @@ Then open your browser and navigate to:
 http://127.0.0.1:5000
 ```
 
+### 🐳 Docker Deployment
+
+ANAT can be deployed instantly using Docker Compose. Since ANAT requires raw packet capture, the container runs in `host` network mode with elevated network capabilities.
+
+```bash
+# Start ANAT in the background
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
 ---
 
 ## 📸 Dashboard
