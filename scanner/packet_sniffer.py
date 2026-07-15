@@ -1,5 +1,8 @@
 from datetime import datetime
 import logging
+import os
+import json
+import urllib.request
 
 from scapy.all import sniff
 from scapy.layers.inet import IP, TCP, UDP
@@ -112,6 +115,30 @@ def start_sniffer():
     sniff(prn=process_packet, store=False)
 
 
+def notify_discord(alert_type, severity, description, src_ip):
+    webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
+    if not webhook_url:
+        return
+    
+    if severity not in ("HIGH", "CRITICAL"):
+        return
+        
+    data = {
+        "content": f"🚨 **{severity} ALERT**: {alert_type} from `{src_ip}`\n> {description}"
+    }
+    
+    req = urllib.request.Request(
+        webhook_url, 
+        data=json.dumps(data).encode("utf-8"), 
+        headers={"Content-Type": "application/json"}
+    )
+    
+    try:
+        urllib.request.urlopen(req, timeout=3)
+    except Exception as e:
+        logger.error("Failed to send Discord webhook: %s", e)
+
+
 def save_alert(src_ip, alert_type, severity, description):
     if is_trusted_source(src_ip):
         logger.info("[TRUSTED] Suppressed %s from %s", alert_type, src_ip)
@@ -134,3 +161,6 @@ def save_alert(src_ip, alert_type, severity, description):
 
         db.session.add(alert)
         db.session.commit()
+    
+    # Send Discord Webhook
+    notify_discord(alert_type, severity, description, src_ip)
