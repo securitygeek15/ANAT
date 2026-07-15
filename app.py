@@ -28,14 +28,22 @@ with app.app_context():
 sniffer.flask_app = app
 
 
-def start_background_sniffer():
-    thread = threading.Thread(
+sniffer_thread = None
+
+def start_background_sniffer(iface=None):
+    global sniffer_thread
+    if sniffer_thread and sniffer_thread.is_alive():
+        sniffer.stop_sniffer()
+        sniffer_thread.join(timeout=2)
+
+    sniffer_thread = threading.Thread(
         target=sniffer.start_sniffer,
+        args=(iface,),
         daemon=True,
         name="packet-sniffer"
     )
-    thread.start()
-    return thread
+    sniffer_thread.start()
+    return sniffer_thread
 
 
 def start_background_cleanup():
@@ -362,6 +370,16 @@ def api_alerts():
             for alert in alerts
         ]
     })
+
+
+@app.route("/api/interface", methods=["POST"])
+def change_interface():
+    if not request.is_json:
+        return jsonify({"error": "Missing JSON"}), 400
+    
+    iface = request.json.get("interface", "all")
+    start_background_sniffer(iface)
+    return jsonify({"status": "success", "interface": iface})
 
 
 def build_csv_response(filename, headers, rows):

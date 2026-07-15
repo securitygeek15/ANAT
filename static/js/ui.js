@@ -95,3 +95,16 @@ document.addEventListener("DOMContentLoaded", () => {
         localStorage.setItem("theme", theme);
     });
 });
+
+// Interface Selection Logic
+function changeInterface(iface) {
+    fetch('/api/interface', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interface: iface })
+    }).then(r => r.json()).then(data => {
+        console.log("Switched to interface: " + data.interface);
+    }).catch(err => {
+        console.error("Error switching interface", err);
+    });
+}

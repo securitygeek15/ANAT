@@ -51,6 +51,12 @@
                     <h1>{% block page_title %}Overview{% endblock %}</h1>
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center;">
+                    <select id="interface-select" style="background: var(--surface-raised); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; color: var(--text); cursor: pointer;" onchange="changeInterface(this.value)">
+                        <option value="all">All Interfaces</option>
+                        <option value="eth0">eth0</option>
+                        <option value="wlan0">wlan0</option>
+                        <option value="lo">lo</option>
+                    </select>
                     <button id="theme-toggle" aria-label="Toggle Dark Mode" style="background: var(--surface-raised); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; cursor: pointer; color: var(--text);">🌓</button>
                     <div class="live-pill"><span class="status-dot"></span>Live monitoring</div>
                 </div>

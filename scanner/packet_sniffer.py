@@ -111,8 +111,23 @@ def process_packet(packet):
         )
 
 
-def start_sniffer():
-    sniff(prn=process_packet, store=False)
+stop_sniffer_flag = False
+
+def should_stop_sniffer(packet):
+    global stop_sniffer_flag
+    return stop_sniffer_flag
+
+def start_sniffer(iface=None):
+    global stop_sniffer_flag
+    stop_sniffer_flag = False
+    kwargs = {"prn": process_packet, "store": False, "stop_filter": should_stop_sniffer}
+    if iface and iface != "all":
+        kwargs["iface"] = iface
+    sniff(**kwargs)
+
+def stop_sniffer():
+    global stop_sniffer_flag
+    stop_sniffer_flag = True
 
 
 def notify_discord(alert_type, severity, description, src_ip):
