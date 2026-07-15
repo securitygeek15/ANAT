@@ -39,7 +39,11 @@ Whether you're a student, security researcher, or homelab enthusiast, ANAT gives
 | 🔎 **Packet & Alert Filters** | Search captured traffic and detections by IP, protocol, port, severity, or alert type |
 | 🛡️ **Trusted Source Suppression** | Ignore alerts from known-safe gateways, routers, or management hosts |
 | 🔄 **Auto-Refresh Interface** | Dashboard updates automatically — no manual reload |
-| 🎨 **Cyberpunk UI** | Dark-themed Bootstrap 5 interface built for clarity under pressure |
+| 🎨 **UI / UX Enhancements** | Cyberpunk UI with Dark/Light Mode Toggle |
+| 🐳 **Docker Deployment** | 1-click deployment using Docker Compose |
+| 🔔 **Discord Webhooks** | Automatically pushes high/critical alerts to a Discord channel |
+| 🗑️ **Data Retention Policies** | Automated background database cleanup of old alerts and packets |
+| 🎛️ **Multi-Interface Selector** | Live network interface switching via dashboard dropdown |
 
 ---
 
