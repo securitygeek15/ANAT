@@ -29,6 +29,46 @@ sniffer.flask_app = app
 
 
 sniffer_thread = None
+capture_state_lock = threading.Lock()
+capture_state = {
+    "status": "not_started",
+    "message": "Packet capture has not been started."
+}
+
+
+def set_capture_state(status, message):
+    with capture_state_lock:
+        capture_state["status"] = status
+        capture_state["message"] = message
+
+
+def run_sniffer(iface):
+    if sniffer.uses_windows_native_socket():
+        message = (
+            "Windows native IPv4 capture is running on "
+            f"{sniffer.default_interface_name()}."
+        )
+    else:
+        message = "Packet capture is running."
+    set_capture_state("running", message)
+    try:
+        sniffer.start_sniffer(iface)
+    except Exception as exc:
+        app.logger.exception("Packet capture stopped unexpectedly")
+        set_capture_state("error", str(exc))
+    else:
+        set_capture_state("stopped", "Packet capture has stopped.")
+
+
+@app.context_processor
+def inject_capture_state():
+    with capture_state_lock:
+        state = dict(capture_state)
+    state["native_windows_capture"] = sniffer.uses_windows_native_socket()
+    return {
+        "capture_state": state,
+        "capture_interfaces": sniffer.available_interfaces()
+    }
 
 def start_background_sniffer(iface=None):
     global sniffer_thread
@@ -36,8 +76,9 @@ def start_background_sniffer(iface=None):
         sniffer.stop_sniffer()
         sniffer_thread.join(timeout=2)
 
+    set_capture_state("starting", "Starting packet capture.")
     sniffer_thread = threading.Thread(
-        target=sniffer.start_sniffer,
+        target=run_sniffer,
         args=(iface,),
         daemon=True,
         name="packet-sniffer"
@@ -374,10 +415,22 @@ def api_alerts():
 
 @app.route("/api/interface", methods=["POST"])
 def change_interface():
-    if not request.is_json:
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
         return jsonify({"error": "Missing JSON"}), 400
-    
-    iface = request.json.get("interface", "all")
+
+    iface = data.get("interface")
+    if not isinstance(iface, str):
+        return jsonify({"error": "Interface must be a string"}), 400
+    if iface != "all":
+        available = {name for name, _ in sniffer.available_interfaces()}
+        if sniffer.uses_windows_native_socket():
+            return jsonify({
+                "error": "Selecting an interface requires Npcap on Windows."
+            }), 400
+        if iface not in available:
+            return jsonify({"error": "Unknown network interface"}), 400
+
     start_background_sniffer(iface)
     return jsonify({"status": "success", "interface": iface})
 
@@ -480,6 +533,8 @@ if __name__ == "__main__":
 
     if os.getenv("ANAT_ENABLE_SNIFFER", "1") == "1":
         start_background_sniffer()
+    else:
+        set_capture_state("disabled", "Live packet capture is disabled.")
 
     if os.getenv("ANAT_ENABLE_CLEANUP", "1") == "1":
         start_background_cleanup()

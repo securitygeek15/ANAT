@@ -1,260 +1,74 @@
-<div align="center">
+# ANAT — AI Network Anomaly Tracker
 
-<img src="https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
-<img src="https://img.shields.io/badge/Flask-3.1.3-000000?style=for-the-badge&logo=flask&logoColor=white"/>
-<img src="https://img.shields.io/badge/Scapy-2.6.1-1A6B36?style=for-the-badge"/>
-<img src="https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite&logoColor=white"/>
-<img src="https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge"/>
+ANAT is a small network-monitoring app. It captures packets, shows them in a web dashboard, and creates alerts for selected suspicious connection attempts.
 
-# 🛡️ ANAT — AI Network Anomaly Tracker
+## What you need
 
-**A lightweight, real-time Intrusion Detection System with a cyberpunk-inspired dashboard.**
+- Windows, Python 3.10 or newer, and this project
+- [Npcap](https://npcap.com/#download) for packet capture on Windows
+- Permission to monitor the network you use
 
-[Features](#-features) · [Tech Stack](#️-tech-stack) · [Installation](#-installation) · [Dashboard](#-dashboard) · [Roadmap](#-roadmap)
+When installing Npcap, leave **Restrict Npcap driver access to Administrators only** unchecked. The Npcap installer needs Windows Administrator approval, but you can then run ANAT from a normal PowerShell window.
 
-</div>
+## Install and start (Windows)
 
----
+Install Npcap, then open PowerShell and download the project:
 
-## 🔍 Overview
-
-ANAT (**AI Network Anomaly Tracker**) is a real-time Intrusion Detection System (IDS) built with Python, Flask, Scapy, and SQLite. It silently monitors your network interface, flags suspicious traffic patterns, and surfaces them through a live, auto-refreshing cyberpunk-themed dashboard — no bloated SIEM required.
-
-Whether you're a student, security researcher, or homelab enthusiast, ANAT gives you instant visibility into what's happening on your network.
-
----
-
-## ✨ Features
-
-| Feature | Description |
-|---|---|
-| 📡 **Real-time Packet Capture** | Sniffs live traffic via Scapy on any available interface |
-| 🚨 **Port Scan Detection** | Identifies hosts rapidly probing multiple ports |
-| ⚠️ **Suspicious Port Alerts** | Flags connections to known dangerous/uncommon ports |
-| 🌊 **Flood Detection** | Detects packet flooding and potential DoS activity |
-| 📦 **Large Packet Detection** | Catches anomalously oversized packets |
-| 🗄️ **SQLite Storage** | Lightweight persistent alert logging with SQLAlchemy ORM |
-| 📊 **Interactive Dashboard** | Live charts via Chart.js with protocol distribution & severity |
-| 🏆 **Top Source IP Leaderboard** | Ranks the most active/suspicious source IPs |
-| 🔎 **Packet & Alert Filters** | Search captured traffic and detections by IP, protocol, port, severity, or alert type |
-| 🛡️ **Trusted Source Suppression** | Ignore alerts from known-safe gateways, routers, or management hosts |
-| 🔄 **Auto-Refresh Interface** | Dashboard updates automatically — no manual reload |
-| 🎨 **UI / UX Enhancements** | Cyberpunk UI with Dark/Light Mode Toggle |
-| 🐳 **Docker Deployment** | 1-click deployment using Docker Compose |
-| 🔔 **Discord Webhooks** | Automatically pushes high/critical alerts to a Discord channel |
-| 🗑️ **Data Retention Policies** | Automated background database cleanup of old alerts and packets |
-| 🎛️ **Multi-Interface Selector** | Live network interface switching via dashboard dropdown |
-
----
-
-## 🛠️ Tech Stack
-
-<div align="center">
-
-| Layer | Technology |
-|---|---|
-| **Backend** | Python · Flask · Scapy |
-| **Database** | SQLite · SQLAlchemy |
-| **Frontend** | Bootstrap 5 · Chart.js · Vanilla JS |
-| **Runtime** | Python 3.10+ |
-
-</div>
-
----
-
-## 📁 Project Structure
-
-```
-ANAT/
-├── analyzer/          # Alert analysis logic
-├── database/          # Database models & session management
-├── scanner/           # Packet capture & detection engine
-├── static/            # CSS, JavaScript assets
-├── templates/         # Jinja2 HTML templates
-├── instance/          # SQLite database instance (auto-generated)
-├── app.py             # Flask application entrypoint
-├── requirements.txt   # Python dependencies
-├── test_sniffer.py    # Sniffer unit tests
-└── README.md
-```
-
----
-
-## 🚀 Installation
-
-### Prerequisites
-
-- Python 3.10+
-- Administrator / root privileges (required for raw packet capture)
-
-### Steps
-
-```bash
-# 1. Clone the repository
+```powershell
 git clone https://github.com/securitygeek15/ANAT.git
 cd ANAT
-
-# 2. Create and activate a virtual environment
 python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# macOS / Linux
-source venv/bin/activate
-
-# 3. Install dependencies
+.\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-
-# 4. Run the application (with elevated privileges for packet capture)
-# Windows — run terminal as Administrator
 python app.py
-
-# macOS / Linux
-sudo python app.py
 ```
 
-### Trusted Gateways
+Keep the PowerShell window open while you use ANAT. Open [http://127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
-Gateways and routers can legitimately touch many ports or move many packets, which can create noisy false positives. Keep capturing their packets while suppressing alerts from them with `ANAT_TRUSTED_IPS`.
+If PowerShell says script execution is disabled, use the app's Python directly instead:
 
-```bash
-# Windows PowerShell
-$env:ANAT_TRUSTED_IPS="192.168.1.1"; python app.py
-
-# macOS / Linux
-ANAT_TRUSTED_IPS="192.168.1.1" sudo -E python app.py
+```powershell
+.\venv\Scripts\python.exe app.py
 ```
 
-Use commas for multiple trusted sources. CIDR ranges are also supported:
+The dashboard shows whether packet capture is running. If capture is unavailable, check that Npcap is installed and restart ANAT.
 
-```bash
-ANAT_TRUSTED_IPS="192.168.1.1,10.0.0.0/24"
+## Using the dashboard
+
+- **Overview** shows packet totals, alert counts, and recent activity.
+- **Packets** shows captured traffic. Use the filters to find packets, or choose **Export CSV**.
+- **Alerts** shows detections. Use the filters or choose **Export CSV**.
+
+ANAT automatically ignores packets **sourced by your default gateway**. They are not saved or shown. Other traffic, including packets sent to the gateway, remains visible.
+
+## What creates an alert?
+
+ANAT only checks initial inbound TCP connection attempts to this computer. Normal outbound browsing and large packets by themselves do not create alerts.
+
+- **Port scan:** one source attempts more than 10 different ports on this computer within 60 seconds.
+- **Sensitive port:** an inbound attempt targets a configured port such as SSH (22).
+- **SYN flood:** one source makes more than 100 initial connection attempts per second to the same port.
+
+An alert means a connection attempt met a detection rule; it does not prove that the attempt succeeded or that the computer was compromised.
+
+## Testing
+
+To run the automated tests, open another PowerShell in the project folder and run:
+
+```powershell
+.\venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-Then open your browser and navigate to:
+To check live capture, use a second computer on a network you own or are authorized to test. Try connecting from that computer to several different ports on the ANAT computer, then check **Alerts** for a port-scan detection. A single attempt to a sensitive port can also create an alert. The other computer is needed because ANAT checks inbound connection attempts, not your own outbound connections.
 
-```
-http://127.0.0.1:5000
-```
+## Linux and macOS
 
-### 🐳 Docker Deployment
+Clone the project, create and activate a virtual environment, and install the requirements. Then run `sudo -E ./venv/bin/python app.py` to enable packet capture. Open [http://127.0.0.1:5000](http://127.0.0.1:5000).
 
-ANAT can be deployed instantly using Docker Compose. Since ANAT requires raw packet capture, the container runs in `host` network mode with elevated network capabilities.
+## Legal
 
-```bash
-# Start ANAT in the background
-docker-compose up -d
+Use ANAT only on networks you own or have permission to monitor. Packet capture may be restricted by local laws.
 
-# View logs
-docker-compose logs -f
-```
+## License
 
-Once the container is running, open your browser and navigate to `http://127.0.0.1:5000` to view the dashboard.
-
-### 🔔 Discord Webhooks
-
-ANAT can automatically push High and Critical severity alerts to a Discord channel. To enable this, simply set the `DISCORD_WEBHOOK_URL` environment variable before running ANAT:
-
-**Using Docker Compose:** Add it to the `environment:` section in `docker-compose.yml`:
-```yaml
-    environment:
-      - DISCORD_WEBHOOK_URL=https://discord.com/api/webhooks/...
-```
-
-**Using Native Terminal:**
-```bash
-# Windows
-$env:DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..."; python app.py
-
-# macOS/Linux
-DISCORD_WEBHOOK_URL="https://discord.com/api/webhooks/..." sudo -E python app.py
-```
-
----
-
-## 📸 Dashboard
-
-The ANAT dashboard provides a unified, real-time view of your network security posture.
-
-> **Live monitoring panel — auto-refreshes every few seconds**
-
-![ANAT Dashboard](images/dashboard.png)
-
-### Dashboard Panels
-
-- **Alert Feed** — Timestamped log of all detected anomalies with severity tags
-- **Protocol Distribution Chart** — Doughnut chart breaking down TCP / UDP / ICMP / Other traffic
-- **Alert Severity Breakdown** — Bar chart showing Low / Medium / High / Critical counts
-- **Top Source IPs** — Leaderboard of the most active source addresses
-- **Packet Counter** — Rolling total of packets captured in the current session
-
-### JSON API
-
-- `GET /api/stats` - totals, protocol counts, severity counts, top sources, and recent alerts
-- `GET /api/packets?limit=100` - latest packets as JSON
-- `GET /api/alerts?limit=100` - latest alerts as JSON
-
----
-
-## 📦 Dependencies
-
-```
-Flask==3.1.3
-Flask-SQLAlchemy==3.1.1
-scapy==2.6.1
-SQLAlchemy==2.0.51
-Werkzeug==3.1.8
-Jinja2==3.1.6
-```
-
-Full list in [`requirements.txt`](./requirements.txt).
-
----
-
-## ⚠️ Legal Disclaimer
-
-> ANAT is intended for **educational and authorized security testing purposes only**.  
-> Only run this tool on networks you own or have explicit permission to monitor.  
-> Unauthorized packet capture may violate local laws and regulations.
-
----
-
-## 🔮 Roadmap
-
-- [ ] AI-powered anomaly detection (ML baseline model)
-- [ ] CSV / JSON alert export
-- [ ] Packet search and advanced filters
-- [ ] Discord / Slack webhook alerts
-- [ ] GeoIP attacker map
-- [ ] Docker support
-- [ ] Email alerting
-- [ ] PCAP file replay for offline analysis
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to open an issue or submit a pull request.
-
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/my-feature`
-3. Commit your changes: `git commit -m 'Add my feature'`
-4. Push to the branch: `git push origin feature/my-feature`
-5. Open a Pull Request
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** — see the [LICENSE](./LICENSE) file for details.
-
----
-
-<div align="center">
-
-Made with 🛡️ by [securitygeek15](https://github.com/securitygeek15)
-
-⭐ If ANAT helped you, consider giving it a star!
-
-</div>
+MIT. See [LICENSE](./LICENSE).
